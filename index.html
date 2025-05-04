@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>فروشگاه ساعت خفن - ثبت نام و سفارش</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+  * {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+  }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: #0e1117;
+    color: #eee;
+    max-width: 350px;
+    max-height: 600px;
+    overflow: hidden;
+    margin: auto;
+    direction: rtl;
+  }
+  /* Loader */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: #0e1117;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+    color: #ddd;
+  }
+  #loader img {
+    width: 160px;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 0 30px #ffaa00cc;
+    transform-origin: center;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #ffaa00cc); }
+    50% { transform: scale(1.05); filter: drop-shadow(0 0 20px #ffbb33cc); }
+  }
+  #loader-text {
+    font-size: 1.4rem;
+    margin-top: 15px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: #ffae00;
+    text-shadow: 0 0 10px #ffae00aa;
+  }
+
+  /* Common transitions */
+  .fade-in {
+    animation: fadeInAnim 1s forwards;
+  }
+  @keyframes fadeInAnim {
+    from {opacity:0; transform: translateY(10px);}
+    to {opacity:1; transform: translateY(0);}
+  }
+
+  /* Header */
+  header {
+    background: #171b26;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(255, 174, 0, 0.3);
+    text-align: center;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  header h1 {
+    color: #ffae00;
+    font-weight: 900;
+    font-size: 1.8rem;
+  }
+  header .logout-btn {
+    position: absolute;
+    left: 12px;
+    top: 18px;
+    background: #ff4f4f;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 6px 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 10px #ff4f4fbb;
+    transition: background 0.3s ease;
+    font-size: 0.9rem;
+  }
+  header .logout-btn:hover {
+    background: #ff0000;
+  }
+
+  /* Forms container */
+  #auth-section {
+    padding: 25px 20px;
+  }
+  form {
+    background: #171b26;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 12px #000000bb;
+  }
+  form label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #ffae00;
+    font-size: 1.1rem;
+  }
+  form input[type="text"],
+  form input[type="tel"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: #0e1117;
+    color: #eee;
+    box-shadow: inset 0 0 6px #ffae0022;
+  }
+  form button {
+    width: 100%;
+    background: #ffae00;
+    color: #171b26;
+    font-weight: 900;
+    padding: 12px 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 12px #ffae0080;
+    transition: background 0.3s ease;
+  }
+  form button:hover {
+    background: #ffcc33;
+  }
+  /* Validation message */
+  .error-msg {
+    color: #ff5050;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  /* User dashboard */
+  #user-dashboard {
+    display: none;
+    padding-bottom: 100px;
+  }
+  #welcome-msg {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #ffae00;
+    text-align: center;
+    margin: 18px 20px 0 20px;
+  }
+  /* Products grid */
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 15px;
+    padding: 15px 20px 20px 20px;
+  }
+
+  /* Product card */
+  .product-card {
+    background: #171b26;
+    border-radius: 14px;
+    box-shadow: 0 3px 8px #00000099;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .product-card:hover,
+  .product-card:focus-visible {
+    outline: none;
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px #ffaa0099;
+  }
+  .product-card img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-bottom: 2px solid #ffae00;
+  }
+  .product-info {
+    padding: 10px 12px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .product-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ffdd57;
+    margin-bottom: 6px;
+    min-height: 36px;
+  }
+  .product-price {
+    color: #ffae00;
+    font-weight: 800;
+    font-size: 1rem;
+  }
+  .add-cart-btn {
+    background: #ffae00;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #171b26;
+    border-radius: 8px;
+    padding: 6px 0;
+    margin-top: 8px;
+    box-shadow: 0 4px 10px #ffae0066;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  .add-cart-btn:hover {
+    background: #ffcc33;
+  }
+  /* Cart section */
+  #cart-section {
+    background: #171b26;
+    padding: 15px 20px;
+    margin: 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(255, 174, 0, 0.3);
+  }
+  #cart-title {
+    color: #ffae00;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  #cart-items {
+    list-style: none;
+    max-height: 180px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  #cart-items li {
+    background: #0e1117;
+    border-radius: 8px;
+    padding: 10px 10px;
+    color: #eee;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  #cart-items li button {
+    background: #ff5050;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    width: 28px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 3px 8px #ff5050cc;
+    font-size: 1rem;
+    line-height: 1;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  #cart-items li button:hover {
+    background: #ff0000;
+  }
+  #place-order-btn {
+    width: 100%;
+    background: #28a745;
+    color: white;
+    font-weight: 900;
+    padding: 12px 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 12px #28a745cc;
+    transition: background 0.3s ease;
+  }
+  #place-order-btn:disabled {
+    background: #777;
+    cursor: default;
+    box-shadow: none;
+  }
+  #place-order-btn:hover:not(:disabled) {
+    background: #3ddb64;
+  }
+  /* Success msg */
+  #order-success-msg {
+    color: #28a745cc;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 8px;
+    text-align: center;
+    display: none;
+  }
+
+  /* Scrollbar styles for cart */
+  #cart-items::-webkit-scrollbar {
+    width: 6px;
+  }
+  #cart-items::-webkit-scrollbar-thumb {
+    background: #ffae00aa;
+    border-radius: 3px;
+  }
+
+</style>
+</head>
+<body>
+  <!-- Loader with watch image -->
+  <div id="loader" aria-label="در حال بارگذاری...">
+    <img src="3.jpg" alt="ساعت زیبا برای فروشگاه" />
+    <div id="loader-text">در حال بارگذاری فروشگاه...</div>
+  </div>
+
+  <!-- Authentication / Registration section -->
+  <section id="auth-section" role="main" aria-label="ثبت نام و ورود کاربران" tabindex="0">
+    <header>
+      <h1>ورود / ثبت نام</h1>
+    </header>
+    <form id="auth-form" aria-describedby="auth-error-msg">
+      <div class="error-msg" id="auth-error-msg" role="alert" aria-live="polite"></div>
+      <label for="phone-input">شماره موبایل</label>
+      <input type="tel" id="phone-input" name="phone" inputmode="tel" pattern="[0-9۰-۹]{10,15}" placeholder="مثلاً 09123456789" autocomplete="tel" required aria-required="true"/>
+      <label for="name-input">نام کامل</label>
+      <input type="text" id="name-input" name="name" placeholder="نام شما" autocomplete="name" required aria-required="true" minlength="2" />
+      <button type="submit" aria-label="ثبت نام و ورود به فروشگاه">ثبت نام / ورود</button>
+    </form>
+  </section>
+
+  <!-- User dashboard - visible after login -->
+  <section id="user-dashboard" aria-label="داشبورد کاربر" tabindex="0">
+    <header>
+      <h1>فروشگاه ساعت خفن</h1>
+      <button class="logout-btn" id="logout-btn" aria-label="خروج از حساب">خروج</button>
+    </header>
+
+    <div id="welcome-msg" aria-live="polite"></div>
+
+    <section class="products" aria-label="محصولات فروشگاه">
+      <!-- Products will be inserted here dynamically -->
+    </section>
+
+    <section id="cart-section" aria-label="سبد خرید شما">
+      <div id="cart-title">سبد خرید شما</div>
+      <ul id="cart-items" tabindex="0" aria-live="polite" aria-relevant="additions removals"></ul>
+      <button id="place-order-btn" disabled aria-label="ثبت سفارش">ثبت سفارش</button>
+      <div id="order-success-msg" role="alert">سفارش شما با موفقیت ثبت شد! ممنون از خرید شما ❤️</div>
+      <div id="sms-info-msg" role="alert" style="color:#ffcc33; font-weight:700; font-size:0.9rem; margin-top:5px; display:none;">
+        برنامه پیامک گوشی شما باز شد، لطفاً پیام را ارسال کنید.
+      </div>
+    </section>
+  </section>
+
+<script>
+  const storePhoneNumber = '09001234567'; // شماره تلفن فروشگاه که سفارش به آن پیامک شود
+
+  const products = [
+    {
+      id: 'p1',
+      name: 'ساعت کلاسیک مردانه',
+      price: 5200000,
+      image: '4.jpg',
+      alt: 'ساعت کلاسیک مردانه'
+    },
+    {
+      id: 'p2',
+      name: 'ساعت اسپرت زنانه',
+      price: 4000000,
+      image: '3.jpg',
+      alt: 'ساعت اسپرت زنانه'
+    },
+    {
+      id: 'p3',
+      name: 'ساعت آنالوگ صفحه مشکی',
+      price: 3200000,
+      image: '4.jpg',
+      alt: 'ساعت آنالوگ با صفحه مشکی'
+    },
+    {
+      id: 'p4',
+      name: 'ساعت دیجیتال فوق‌العاده',
+      price: 4500000,
+      image: '3.jpg',
+      alt: 'ساعت دیجیتال فوق العاده'
+    }
+  ];
+
+  const loader = document.getElementById('loader');
+  const authSection = document.getElementById('auth-section');
+  const userDashboard = document.getElementById('user-dashboard');
+  const authForm = document.getElementById('auth-form');
+  const phoneInput = document.getElementById('phone-input');
+  const nameInput = document.getElementById('name-input');
+  const authErrorMsg = document.getElementById('auth-error-msg');
+  const welcomeMsg = document.getElementById('welcome-msg');
+  const productsContainer = userDashboard.querySelector('.products');
+  const cartItemsList = document.getElementById('cart-items');
+  const placeOrderBtn = document.getElementById('place-order-btn');
+  const orderSuccessMsg = document.getElementById('order-success-msg');
+  const smsInfoMsg = document.getElementById('sms-info-msg');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  let cart = [];
+
+  function formatPrice(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').replace(/\d/g,
+      d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  }
+
+  function saveUser(user) {
+    localStorage.setItem('watchStoreUser', JSON.stringify(user));
+  }
+  function loadUser() {
+    const data = localStorage.getItem('watchStoreUser');
+    if (data) return JSON.parse(data);
+    return null;
+  }
+  function saveCart(cartToSave) {
+    localStorage.setItem('watchStoreCart', JSON.stringify(cartToSave));
+  }
+  function loadCart() {
+    const data = localStorage.getItem('watchStoreCart');
+    if (data) return JSON.parse(data);
+    return [];
+  }
+  function logout() {
+    localStorage.removeItem('watchStoreUser');
+    localStorage.removeItem('watchStoreCart');
+    cart = [];
+    authSection.style.display = 'block';
+    userDashboard.style.display = 'none';
+    smsInfoMsg.style.display = 'none';
+  }
+  function validatePhone(phone) {
+    const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+    const normalized = phone.replace(/[۰-۹]/g, d => persianDigits.indexOf(d));
+    return /^[0-9]{10,15}$/.test(normalized);
+  }
+  function renderProducts() {
+    productsContainer.innerHTML = '';
+    products.forEach(product => {
+      const card = document.createElement('article');
+      card.className = 'product-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'group');
+      card.setAttribute('aria-label', `${product.name}، قیمت ${formatPrice(product.price)} تومان`);
+
+      card.innerHTML = `
+        <img src="${product.image}" alt="${product.alt}" />
+        <div class="product-info">
+          <div class="product-name">${product.name}</div>
+          <div class="product-price">${formatPrice(product.price)} تومان</div>
+          <button class="add-cart-btn" aria-label="افزودن به سبد خرید ${product.name}">افزودن به سبد خرید</button>
+        </div>
+      `;
+
+      const btn = card.querySelector('.add-cart-btn');
+      btn.addEventListener('click', () => {
+        addToCart(product.id);
+      });
+
+      productsContainer.appendChild(card);
+    });
+  }
+  function renderCart() {
+    cartItemsList.innerHTML = '';
+    if (cart.length === 0) {
+      cartItemsList.innerHTML = '<li>سبد خرید شما خالی است.</li>';
+      placeOrderBtn.disabled = true;
+      return;
+    }
+    cart.forEach(item => {
+      const product = products.find(p => p.id === item.id);
+      if (!product) return;
+      const li = document.createElement('li');
+      li.setAttribute('role', 'listitem');
+      li.textContent = `${product.name} - تعداد: ${item.qty}`;
+      const removeBtn = document.createElement('button');
+      removeBtn.setAttribute('aria-label', `حذف ${product.name} از سبد خرید`);
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => {
+        removeFromCart(product.id);
+      });
+      li.appendChild(removeBtn);
+      cartItemsList.appendChild(li);
+    });
+    placeOrderBtn.disabled = false;
+  }
+  function addToCart(productId) {
+    const existing = cart.find(item => item.id === productId);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ id: productId, qty: 1 });
+    }
+    saveCart(cart);
+    renderCart();
+  }
+  function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart(cart);
+    renderCart();
+  }
+  function buildOrderMessage(user, cartItems) {
+    let message = `سفارش جدید از ${user.name} (% ${user.phone}):%0A`;
+    cartItems.forEach(item => {
+      const product = products.find(p => p.id === item.id);
+      if (product) {
+        message += `- ${product.name} x ${item.qty}%0A`;
+      }
+    });
+    return message;
+  }
+  function placeOrder() {
+    if (cart.length === 0) return;
+    const user = loadUser();
+    if (!user) return;
+
+    // Build SMS message text
+    const messageText = buildOrderMessage(user, cart);
+
+    // Encode URI component
+    const encodedMessage = encodeURIComponent(messageText).replace(/%20/g, '+');
+
+    // Compose sms URI
+    // Use 'sms:' or 'sms://', for cross device compatibility sometimes 'sms:' works better.
+    // On iOS, ?&body= is supported
+    // On Android, ?body= or &body= is supported but not guaranteed. Some accept only the first argument as number.
+    // Here we attempt common usage:
+    const smsUri = `sms:${storePhoneNumber}?body=${encodedMessage}`;
+
+    // Open SMS app with prefilled message (user must tap send)
+    smsInfoMsg.style.display = 'block';
+    orderSuccessMsg.style.display = 'none';
+
+    // Clear cart and update UI
+    cart = [];
+    saveCart(cart);
+    renderCart();
+
+    // Open SMS URI after a small delay to show message to user
+    setTimeout(() => {
+      window.location.href = smsUri;
+    }, 500);
+  }
+  authForm.addEventListener('submit', e => {
+    e.preventDefault();
+    authErrorMsg.textContent = '';
+    const phone = phoneInput.value.trim();
+    const name = nameInput.value.trim();
+
+    if (!validatePhone(phone)) {
+      authErrorMsg.textContent = 'لطفاً شماره موبایل معتبر وارد کنید.';
+      phoneInput.focus();
+      return;
+    }
+    if (name.length < 2) {
+      authErrorMsg.textContent = 'لطفاً نام کامل خود را وارد کنید.';
+      nameInput.focus();
+      return;
+    }
+
+    const user = { phone, name };
+    saveUser(user);
+    showUserDashboard(user);
+  });
+  function showUserDashboard(user) {
+    authSection.style.display = 'none';
+    userDashboard.style.display = 'block';
+    welcomeMsg.textContent = `خوش آمدید، ${user.name} عزیز!`;
+    renderProducts();
+    cart = loadCart();
+    renderCart();
+    smsInfoMsg.style.display = 'none';
+    orderSuccessMsg.style.display = 'none';
+  }
+  logoutBtn.addEventListener('click', () => {
+    logout();
+  });
+  window.addEventListener('load', () => {
+    const user = loadUser();
+    setTimeout(() => {
+      loader.style.transition = 'opacity 1.2s ease';
+      loader.style.opacity = 0;
+      setTimeout(() => {
+        loader.style.display = 'none';
+        if (user) {
+          showUserDashboard(user);
+        } else {
+          authSection.style.display = 'block';
+          userDashboard.style.display = 'none';
+        }
+        document.body.style.overflow = 'auto';
+      }, 1300);
+    }, 2200);
+  });
+  placeOrderBtn.addEventListener('click', placeOrder);
+</script>
+</body>
+</html>
+

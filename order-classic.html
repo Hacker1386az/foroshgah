@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>فروشگاه ساعت خفن - ثبت سفارش</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+  }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: #0e1117;
+    color: #eee;
+    max-width: 350px;
+    min-height: 600px;
+    margin: auto;
+    direction: rtl;
+  }
+  a {
+    color: #ffae00;
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  header {
+    background: #171b26;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(255, 174, 0, 0.3);
+    text-align: center;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  header h1 {
+    color: #ffae00;
+    font-weight: 900;
+    font-size: 1.6rem;
+  }
+  #main-content {
+    padding: 15px 20px 60px 20px;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #ffae00;
+    font-weight: 900;
+  }
+  .product-info {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  .product-info img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px #ffaa0066;
+  }
+  .product-info h3 {
+    font-size: 1.3rem;
+    margin-top: 10px;
+    color: #ffdd57;
+  }
+  .product-info .price {
+    font-size: 1.1rem;
+    color: #ffae00;
+    font-weight: 800;
+    margin-top: 6px;
+  }
+  form {
+    background: #191e2e;
+    padding: 18px 20px;
+    border-radius: 14px;
+    box-shadow: 0 6px 22px rgba(255,174,0,0.3);
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 700;
+    color: #ffdd57;
+  }
+  input, textarea {
+    width: 100%;
+    margin-top: 6px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    background: #1c1f2a;
+    color: #eee;
+    resize: vertical;
+  }
+  textarea { min-height: 80px;}
+  button {
+    margin-top: 20px;
+    width: 100%;
+    font-weight: 900;
+    font-size: 1.15rem;
+    background: #ffae00;
+    border: none;
+    color: #171b26;
+    padding: 14px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 14px #ffae0066;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #ffc230;
+  }
+  #back-link {
+    display: block;
+    margin-top: 22px;
+    text-align: center;
+    color: #faa71a;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>فروشگاه ساعت خفن</h1>
+  </header>
+  <main id="main-content" role="main" tabindex="-1">
+    <h2 id="page-title">ثبت سفارش</h2>
+    <section class="product-info" aria-label="اطلاعات محصول برای ثبت سفارش">
+      <img id="product-image" src="" alt="تصویر محصول" />
+      <h3 id="product-name"></h3>
+      <div class="price" id="product-price"></div>
+    </section>
+    <form id="order-form" action="https://formspree.io/f/mknvlzoo" method="POST">
+      <!-- Replace above action URL with your Formspree form endpoint -->
+      <input type="hidden" name="product-name" id="form-product-name" />
+      <input type="hidden" name="_language" value="fa" />
+      <label for="full-name">نام و نام خانوادگی</label>
+      <input type="text" id="full-name" name="full-name" required placeholder="نام و نام خانوادگی خود را وارد کنید" autocomplete="name" />
+      <label for="phone-number">شماره تلفن</label>
+      <input type="tel" id="phone-number" name="phone-number" required pattern="09[0-9]{9}" placeholder="۰۹۱۲۳۴۵۶۷۸۹" autocomplete="tel" />
+      <label for="address">آدرس کامل</label>
+      <textarea id="address" name="address" required placeholder="آدرس تحویل سفارش را وارد کنید"></textarea>
+      <button type="submit">ثبت سفارش</button>
+    </form>
+    <a href="javascript:history.back()" id="back-link" aria-label="بازگشت به صفحه اصلی فروشگاه">بازگشت به صفحه محصولات</a>
+  </main>
+
+  <script>
+    // Available products data
+    const products = {
+      classic: {
+        name: 'ساعت کلاسیک مردانه',
+        price: '۵,۲۰۰,۰۰۰ تومان',
+        image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=400'
+      },
+      sport: {
+        name: 'ساعت اسپرت زنانه',
+        price: '۴,۰۰۰,۰۰۰ تومان',
+        image: 'https://images.pexels.com/photos/428340/pexels-photo-428340.jpeg?auto=compress&cs=tinysrgb&w=400'
+      },
+      analog: {
+        name: 'ساعت آنالوگ صفحه مشکی',
+        price: '۳,۲۰۰,۰۰۰ تومان',
+        image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=400'
+      },
+      digital: {
+        name: 'ساعت دیجیتال فوق‌العاده',
+        price: '۴,۵۰۰,۰۰۰ تومان',
+        image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=400'
+      }
+    };
+
+    // Parse URL param "order" to get product key
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // Setup page content for product order form
+    function setupProductOrder(productKey) {
+      const product = products[productKey];
+      if (!product) {
+        document.getElementById('main-content').innerHTML = '<p style="text-align:center;color:#f33;font-weight:bold;margin-top:40px;">محصول یافت نشد.</p><a href="index.html" style="color:#ffae00;text-align:center;display:block;margin-top:20px;">بازگشت به صفحه اصلی</a>';
+        return;
+      }
+      document.getElementById('product-name').textContent = product.name;
+      document.getElementById('product-price').textContent = product.price;
+      const img = document.getElementById('product-image');
+      img.src = product.image;
+      img.alt = product.name + ' تصویر';
+
+      // Put product name in hidden input for form submission
+      document.getElementById('form-product-name').value = product.name;
+    }
+
+    // On document ready
+    document.addEventListener('DOMContentLoaded', () => {
+      const productKey = getQueryParam('order');
+      if (!productKey) {
+        // No product selected, redirect to main page (or show message)
+        document.getElementById('main-content').innerHTML = '<p style="text-align:center;color:#f33;font-weight:bold;margin-top:40px;">محصول انتخاب نشده است.</p><a href="index.html" style="color:#ffae00;text-align:center;display:block;margin-top:20px;">بازگشت به صفحه اصلی</a>';
+        return;
+      }
+      setupProductOrder(productKey);
+      document.getElementById('main-content').focus();
+    });
+  </script>
+</body>
+</html>
+
+```
+
+
